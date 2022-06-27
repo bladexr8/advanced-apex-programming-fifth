@@ -23,7 +23,7 @@ public with sharing class Benchmarking {
         targetEndTime = Limits.getCpuTime();
     }
 
-    private static void ReportResults(Integer loops) {
+    private static void ReportResults(String operation, Integer loops) {
         if (targetEndTime == null) markTargetEndTime();
 
         Integer referenceDuration = referenceEndTime - referenceStartTime;
@@ -37,12 +37,16 @@ public with sharing class Benchmarking {
         eachItem /= loops;
         eachItem.setScale(2);
 
-        System.debug(LoggingLevel.ERROR, 'Reference Duration: ' + referenceDuration 
+        System.debug(LoggingLevel.ERROR, 'Operation: ' + operation 
+            + ' Reference Duration: ' + referenceDuration 
             + ' Target Duration: ' + targetDuration 
             + ' Benchmark Results: ' + benchmarkResults 
             + ' ms or ' + eachItem + ' us per operation');
     }
 
+    /**
+     * integer addition in a loop
+     */
     @istest
     public static void primitiveTests() {
         Integer v = 0;
@@ -57,10 +61,40 @@ public with sharing class Benchmarking {
         for (Integer x = 0; x < 1000000; x++) {
             v += 5;
         }
+        markTargetEndTime();
 
         // report the results
-        ReportResults(1000000);
+        ReportResults('primitiveTests', 1000000);
     }
+
+    /**
+     * list memory allocation
+     */
+     @istest
+     public static void testNewAllocate() {
+        List<List<Integer>> numbers = new List<List<Integer>>();
+        List<Integer> emptyLst = new List<Integer>();
+
+        markReferenceStartTime();
+
+        for (Integer x = 0; x < 1000000; x++) {
+            numbers.add(emptyLst);
+        }
+
+        markReferenceEndTime();
+
+        markTargetStartTime();
+
+        for (Integer x = 0; x < 1000000; x++) {
+            numbers.add(new List<Integer>{x});  // Add a New List
+        }
+
+        markTargetEndTime();
+
+        ReportResults('testNewAllocate', 1000000);
+
+
+     }
 
     
 }
