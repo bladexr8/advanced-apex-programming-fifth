@@ -96,5 +96,24 @@ public with sharing class Benchmarking {
 
      }
 
+     // Benchmark getGlobalDescribe first operation and cached operations
+     @istest
+     public static void testGlobalDescribe() {
+        markReferenceStartTime();
+        for(Integer x = 0; x < 1; x++) {
+            Map<String, Schema.SObjectType> describeInfo = Schema.getGlobalDescribe();
+        }
+        markReferenceEndTime();
+
+        // Because it was called once, the following will measure internal caching
+        markTargetStartTime();
+        for(Integer x = 0; x < 1000; x++) {
+            Map<String, Schema.SObjectType> describeInfo = Schema.getGlobalDescribe();
+        }
+        markTargetEndTime();
+
+        ReportResults('testGlobalDescribe', 1000);
+     }
+
     
 }
