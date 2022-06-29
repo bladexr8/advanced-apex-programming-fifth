@@ -11,6 +11,7 @@ public Inherited sharing class TriggerDispatcher {
         List<TriggerAPI.ITriggerHandler> handlers = getTriggerHandlers(objectType, triggerType);
 
         // execute the HandleTrigger method for each trigger handler
+        System.Debug(LoggingLevel.Debug, 'Executing Trigger Handler Classes...');
         for (TriggerAPI.ITriggerHandler handler: handlers) {
             handler.HandleTrigger(triggerType, newList, newMap, oldList, oldMap);
         }
@@ -25,6 +26,9 @@ public Inherited sharing class TriggerDispatcher {
 
         String operationType = triggerType.name();
 
+        System.Debug(LoggingLevel.Debug, 'Selecting Active Trigger Handlers for'
+            + objectType + ' -> ' + operationType);
+
         // query custom metadata for trigger handler objects and prepare an array
         // to hold the results. Note ORDER BY field needs to be included in query, 
         // even if it is unused
@@ -34,10 +38,15 @@ public Inherited sharing class TriggerDispatcher {
                                                 AND Trigger_Type__c = :operationType
                                                 AND Active__c = true 
                                                 ORDER BY Priority__c ASC];
+
+        System.Debug(LoggingLevel.Debug, 'Found ' + handlers.size() + ' Trigger Handlers...');
+        System.Debug(LoggingLevel.Debug, handlers);
         
         // Validate the classes
+        System.Debug(LoggingLevel.Debug, 'Creating Trigger Handler Classes...');
         List<TriggerAPI.ITriggerHandler> results = new List<TriggerAPI.ITriggerHandler>();
         for (Trigger_Handler__mdt handler: handlers) {
+            System.Debug(LoggingLevel.Debug, 'Creating Trigger Handler Class for ' + handler.Apex_Class__c);
             // create System.Type variable for the trigger handler class
             System.Type theType = Type.forName(handler.Apex_Class__c);
             // try resolving local class
@@ -56,6 +65,7 @@ public Inherited sharing class TriggerDispatcher {
                 }
             }
         }
+        System.Debug(LoggingLevel.Debug, 'Finished Creating Trigger Handler Classes...');
         return results;
     }
 
