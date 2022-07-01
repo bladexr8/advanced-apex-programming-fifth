@@ -1,3 +1,4 @@
+// Handles opportunity after-update and opportunity after-insert
 public inherited sharing class FlagHighValueOpportunities implements TriggerAPI.ITriggerHandler {
     
     public void HandleTrigger(TriggerOperation TrigType, List<SObject> newSObjectList, Map<Id, SObject> newSObjectMap, 
