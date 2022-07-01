@@ -5,6 +5,8 @@ public inherited sharing class AutoProgressStage implements TriggerAPI.ITriggerH
                                 Map<Id, SObject> newSObjectMap, List<SObject> oldSObjectList,
                                 Map<Id, SObject> oldSObjectMap)
     {
+        System.Debug(LoggingLevel.Debug, '***Executing AutoProgressStage->HandleTrigger...');
+        
         // Cast to the correct type
         List<Opportunity> newList = (List<Opportunity>) newSObjectList;
         Map<Id, Opportunity> oldMap = (Map<Id, Opportunity>) oldSObjectMap;
@@ -16,6 +18,8 @@ public inherited sharing class AutoProgressStage implements TriggerAPI.ITriggerH
                     op.StageName = 'Qualification';
                 }
         }
+
+        System.Debug(LoggingLevel.Debug, '***FINISHED Executing AutoProgressStage->HandleTrigger...');
     }
 
 }

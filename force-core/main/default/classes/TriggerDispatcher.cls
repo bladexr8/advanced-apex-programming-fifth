@@ -11,10 +11,13 @@ public Inherited sharing class TriggerDispatcher {
         List<TriggerAPI.ITriggerHandler> handlers = getTriggerHandlers(objectType, triggerType);
 
         // execute the HandleTrigger method for each trigger handler
+        // note that trigger handler classes are run synchronously in
+        // order retrieved
         System.Debug(LoggingLevel.Debug, 'Executing Trigger Handler Classes...');
         for (TriggerAPI.ITriggerHandler handler: handlers) {
             handler.HandleTrigger(triggerType, newList, newMap, oldList, oldMap);
         }
+        System.Debug(LoggingLevel.Debug, 'FINISHED Executing Trigger Handler Classes...');
         
         
     }

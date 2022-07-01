@@ -4,6 +4,8 @@ public inherited sharing class MarkCloseDateOnPrimaryContacts implements Trigger
     public void HandleTrigger(TriggerOperation TrigType, List<SObject> newSObjectList, Map<Id, SObject> newSObjectMap, 
     List<SObject> oldSObjectList, Map<ID, SObject> oldSObjectMap)
     {
+        System.Debug(LoggingLevel.Debug, '***Executing MarkCloseDateOnPrimaryContacts->HandleTrigger...');
+        
         // Cast to the correct type
         List<Opportunity> newList = (List<Opportunity>)newSObjectList;
         Map<ID, Opportunity> oldMap = (Map<ID, Opportunity>)oldSObjectMap;
@@ -33,6 +35,8 @@ public inherited sharing class MarkCloseDateOnPrimaryContacts implements Trigger
         for(ID contactID: contactToCloseDates.keyset()) contactsToUpdate.add(new Contact(ID = contactID, Last_Close_Date__c = contactToCloseDates.get(contactID)));
 
         update contactsToUpdate;
+
+        System.Debug(LoggingLevel.Debug, '***FINISHED Executing MarkCloseDateOnPrimaryContacts->HandleTrigger...');
 
     }
 

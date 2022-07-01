@@ -4,6 +4,8 @@ public inherited sharing class FlagHighValueOpportunities implements TriggerAPI.
     public void HandleTrigger(TriggerOperation TrigType, List<SObject> newSObjectList, Map<Id, SObject> newSObjectMap, 
     List<SObject> oldSObjectList, Map<ID, SObject> oldSObjectMap)
     {
+        System.Debug(LoggingLevel.Debug, '***Executing FlagHighValueOpportunities->HandleTrigger...');
+
         // Cast to the correct type
         List<Opportunity> newList = (List<Opportunity>) newSObjectList;
         Map<Id, Opportunity> oldMap = (Map<Id, Opportunity>) oldSObjectMap;
@@ -35,6 +37,8 @@ public inherited sharing class FlagHighValueOpportunities implements TriggerAPI.
         }
 
         update contactsToUpdate;
+
+        System.Debug(LoggingLevel.Debug, '***FINISHED Executing FlagHighValueOpportunities->HandleTrigger...');
     }
 
 }
