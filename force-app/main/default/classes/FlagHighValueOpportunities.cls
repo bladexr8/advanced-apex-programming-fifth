@@ -41,7 +41,7 @@ public inherited sharing class FlagHighValueOpportunities implements TriggerAPI.
         System.Debug(LoggingLevel.Debug, '***FINISHED Executing FlagHighValueOpportunities->HandleTrigger...');
     }
 
-    public Boolean CaptureInternalDMLTriggers() { return false; }
+    public Boolean CaptureInternalDMLTriggers() { return true; }
 
     public Boolean HandleAllTriggers() { return false; }
 
@@ -49,7 +49,7 @@ public inherited sharing class FlagHighValueOpportunities implements TriggerAPI.
 
     public void InternalTrigger(String objectType, TriggerOperation triggerType, List<SObject> newList, Map<Id, SObject> newMap, 
         List<SObject> oldList, Map<ID, SObject> oldMap) {
-            // TriggerDispatcher.dispatchTrigger('ExecutiveOutreach', objectType, triggerType, newList, newMap, oldList, oldMap);
+            TriggerDispatcher.dispatchTrigger('ExecutiveOutreach', objectType, triggerType, newList, newMap, oldList, oldMap);
         }
 
 }

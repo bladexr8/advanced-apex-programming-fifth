@@ -17,8 +17,8 @@ public Inherited sharing class TriggerDispatcher {
         System.Debug(LoggingLevel.Debug, 'handleTrigger -> ' + objectType + ' -> ' + triggerType);
         
         // get the list of trigger handlers to be executed    
-        System.Debug(LoggingLevel.Debug, 'Retrieving Trigger Handlers...');
-        List<TriggerAPI.ITriggerHandler> handlers = getTriggerHandlers(objectType, triggerType);
+        //System.Debug(LoggingLevel.Debug, 'Retrieving Trigger Handlers...');
+        List<TriggerAPI.ITriggerHandler> handlers = getTriggerHandlers(objectType, triggerType, null);
 
         // When a DML Operation is being performed by any handler, the currentHandler property
         // will be set by the dispatcher to reference the current executing handler. If the current
@@ -26,10 +26,10 @@ public Inherited sharing class TriggerDispatcher {
         // method on the currently running handler
         if (currentHandler != null) {
             // this is DML invoked from another trigger
-            if (currentHandler.CaptureInternalDMLTriggers() {
+            if (currentHandler.CaptureInternalDMLTriggers()) {
                 System.Debug(LoggingLevel.Debug, '***Invoking INTERNAL Trigger Handler -> ' + currentHandler + ' ***');
                 currentHandler.InternalTrigger(objectType, triggerType, newList, newMap, oldList, oldMap);
-            })
+            }
         }
 
         // execute the HandleTrigger method for each trigger handler
@@ -48,18 +48,18 @@ public Inherited sharing class TriggerDispatcher {
             System.Debug(LoggingLevel.Debug, '***Executing Trigger Handler -> ' + handler + ' ***');
 
             // keep track of previous trigger fired
-            System.Debug(LoggingLevel.Debug, '***Setting previousHandler to ' + currentHandler);
+            //System.Debug(LoggingLevel.Debug, '***Setting previousHandler to ' + currentHandler);
             TriggerAPI.ITriggerHandler previousHandler = currentHandler;
 
             // set the static class property of current trigger
-            System.Debug(LoggingLevel.Debug, '***Setting currentHandler to ' + handler);
+            //System.Debug(LoggingLevel.Debug, '***Setting currentHandler to ' + handler);
             currentHandler = handler;
 
             // execute the current trigger
             System.Debug(LoggingLevel.Debug,'***Invoking Trigger Handler' + handler);
             handler.HandleTrigger(triggerType, newList, newMap, oldList, oldMap);
 
-            System.Debug(LoggingLevel.Debug, '***Setting currentHandler to ' + previousHandler);
+            //System.Debug(LoggingLevel.Debug, '***Setting currentHandler to ' + previousHandler);
             currentHandler = previousHandler;
 
             System.Debug(LoggingLevel.Debug, '***FINISHED Executing Trigger Handler -> ' + handler + ' ***');
@@ -72,7 +72,7 @@ public Inherited sharing class TriggerDispatcher {
     // return a list of ITrigger handler objects - trigger handlers that
     // have registered themselves to handle a particular trigger
     private static List<TriggerAPI.ITriggerHandler> getTriggerHandlers(String objectType, 
-        TriggerOperation triggerType) {
+        TriggerOperation triggerType, String className) {
 
         String operationType = triggerType.name();
 
@@ -93,10 +93,14 @@ public Inherited sharing class TriggerDispatcher {
         System.Debug(LoggingLevel.Debug, handlers);
         
         // Validate the classes
-        System.Debug(LoggingLevel.Debug, 'Creating Trigger Handler Classes...');
+        //System.Debug(LoggingLevel.Debug, 'Creating Trigger Handler Classes...');
         List<TriggerAPI.ITriggerHandler> results = new List<TriggerAPI.ITriggerHandler>();
         for (Trigger_Handler__mdt handler: handlers) {
-            System.Debug(LoggingLevel.Debug, 'Creating Trigger Handler Class for ' + handler.Apex_Class__c);
+
+            // if className is specified, ignore any handlers other than the requested class
+            if(className!=null && handler.Apex_Class__c != className) continue;
+
+            //System.Debug(LoggingLevel.Debug, 'Creating Trigger Handler Class for ' + handler.Apex_Class__c);
             // create System.Type variable for the trigger handler class
             System.Type theType = Type.forName(handler.Apex_Class__c);
             // try resolving local class
@@ -115,8 +119,25 @@ public Inherited sharing class TriggerDispatcher {
                 }
             }
         }
-        System.Debug(LoggingLevel.Debug, 'Finished Creating Trigger Handler Classes...');
+        //System.Debug(LoggingLevel.Debug, 'Finished Creating Trigger Handler Classes...');
         return results;
+    }
+
+
+    // Internal Trigger Dispatcher Method
+    // can be used by one handler to dispatch triggers to another
+    public static void dispatchTrigger(String handlerName, String objectType, TriggerOperation triggerType, List<SObject> newList, Map<Id, SObject> newMap, 
+    List<SObject> oldList, Map<ID, SObject> oldMap)
+    {
+        List<TriggerAPI.ITriggerHandler> availableHandlers = getTriggerHandlers(objectType, triggerType, handlerName);
+        // There should only be one entry for a given class, object and trigger type
+        if (availableHandlers.size() != 1) return;
+
+        TriggerAPI.ITriggerHandler previousHandler = currentHandler;
+        currentHandler = availableHandlers[0];
+        System.Debug(LoggingLevel.Debug, 'Internally Invoking ' + currentHandler + ' from ' + previousHandler);
+        currentHandler.HandleTrigger(triggerType, newList, newMap, oldList, oldMap);
+        currentHandler = previousHandler;
     }
 
 

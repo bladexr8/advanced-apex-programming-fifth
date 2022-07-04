@@ -63,7 +63,7 @@ public inherited sharing class HandleContactPriorities implements TriggerAPI.ITr
 
     public Boolean HandleAllTriggers() { return false; }
 
-    public Boolean IgnoreApplicationTriggers() { return false; }
+    public Boolean IgnoreApplicationTriggers() { return true; }
 
     public void InternalTrigger(String objectType, TriggerOperation triggerType, List<SObject> newList, Map<Id, SObject> newMap, 
         List<SObject> oldList, Map<ID, SObject> oldMap) {}

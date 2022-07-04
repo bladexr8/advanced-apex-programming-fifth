@@ -30,7 +30,7 @@
             <name>Set_Priority_To_10</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>false</active>
+        <active>true</active>
         <formula>High_Value_Opportunities__c &gt;= 2 &amp;&amp; NOT(ISCHANGED( Admin_Apex_Update__c ))</formula>
         <triggerType>onAllChanges</triggerType>
     </rules>
