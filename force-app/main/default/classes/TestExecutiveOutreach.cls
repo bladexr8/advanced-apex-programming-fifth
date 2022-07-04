@@ -95,7 +95,7 @@ public class TestExecutiveOutreach {
 
     }
 
-    @istest
+    /*@istest
     public static void TestHighValuesOnly()
     {
         List<Contact> cts = [Select ID from Contact];
@@ -114,6 +114,6 @@ public class TestExecutiveOutreach {
 
         System.assertEquals(successes, tasks.size());
 
-    }
+    }*/
 
 }
