@@ -1,8 +1,12 @@
 public inherited sharing class ExecutiveOutreach implements TriggerAPI.ITriggerHandler {
+
+    private static Set<Id> executedOnce = new Set<Id>();
+
     public static void handleTrigger(TriggerOperation TrigType, List<SObject> newSObjectList, Map<Id, SObject> newSObjectMap, 
     List<SObject> oldSObjectList, Map<ID, SObject> oldSObjectMap)
     {
         //Set<ID> executedOnce = LocalStatics.executedOnce;
+        
 
         // Cast to the correct type
         List<Contact> newList = (List<Contact>)newSObjectList;
@@ -27,8 +31,11 @@ public inherited sharing class ExecutiveOutreach implements TriggerAPI.ITriggerH
         // Update the priorities
         for(Contact ct: ContactsWithChangedHighValue)
         {
-            //if(executedOnce.contains(ct.id)) continue;
-            //executedOnce.add(ct.id);
+            // only add a new task if the contact hasn't
+            // already been processed in this context
+            if(executedOnce.contains(ct.id)) continue;
+            executedOnce.add(ct.id);
+            
             newTasks.add(
                 new Task(OwnerID = ct.OwnerID, Type='Other', 
                     Subject = 'Executive outreach!', 
