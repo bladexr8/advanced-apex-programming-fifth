@@ -11,6 +11,27 @@ public Inherited sharing class TriggerAPI {
             List<SObject> oldList,
             Map<Id, SObject> oldMap);
 
+
+        // RECOMMENDED Default is for each handler to receive all triggers
+        // that result from DML operations that it performs 
+        // (CaptureInternalDMLTriggers = true)
+        
+        // This is due to the fact there is no predicting what triggers 
+        // may fire due to other handlers, automation, or code outside
+        // of the application, which may have a cascading effect and call
+        // more handlers, etc.
+
+        // If by default, every handler receives all triggers that occur during
+        // it's own DML Operations, and by default ignores those triggers, this will
+        // eliminate most potential side effects - i.e. the default mode for each
+        // handler becomes shutting down everything else in the application while it
+        // is performing a DML Operation, reducing the risk of reentrancy, chance
+        // of side effects and improves performance
+
+        // Individual Handlers can then be enabled based on the needs of the business,
+        // by specifying that they should be invoked by all triggers, or by having
+        // handlers dispatch directly to each other
+
         
         // called by the dispatcher to determine if the handler
         // wants to receive all triggers that occur while it is
