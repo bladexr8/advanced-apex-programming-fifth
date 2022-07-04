@@ -20,39 +20,47 @@ public Inherited sharing class TriggerDispatcher {
         System.Debug(LoggingLevel.Debug, 'Retrieving Trigger Handlers...');
         List<TriggerAPI.ITriggerHandler> handlers = getTriggerHandlers(objectType, triggerType);
 
-        // trigger handlers retrieved
-        for (TriggerAPI.ITriggerHandler hnd : handlers) {
-            System.Debug(LoggingLevel.Debug, 'Retrieved Handler:' + hnd);
+        // When a DML Operation is being performed by any handler, the currentHandler property
+        // will be set by the dispatcher to reference the current executing handler. If the current
+        // handler is asking to capture all internal DML, the dispatcher will call the InternalTrigger
+        // method on the currently running handler
+        if (currentHandler != null) {
+            // this is DML invoked from another trigger
+            if (currentHandler.CaptureInternalDMLTriggers() {
+                System.Debug(LoggingLevel.Debug, '***Invoking INTERNAL Trigger Handler -> ' + currentHandler + ' ***');
+                currentHandler.InternalTrigger(objectType, triggerType, newList, newMap, oldList, oldMap);
+            })
         }
 
         // execute the HandleTrigger method for each trigger handler
         // note that trigger handler classes are run synchronously in
         // order retrieved
+
+        // the dispatcher will ignore all of the remaining handlers unless they explicitly
+        // requested to handle all triggers using the HandleAllTriggers method. Also, any 
+        // handlers that explicitly want to ignore internal DML will be skipped, even if no handler
+        // is catching the internal DML Triggers
         System.Debug(LoggingLevel.Debug, '***Executing Trigger Handler Classes...');
         for (TriggerAPI.ITriggerHandler handler: handlers) {
+
+            if (currentHandler != null && !handler.HandleAllTriggers() && (handler.IgnoreApplicationTriggers() || currentHandler.CaptureInternalDMLTriggers())) continue;
 
             System.Debug(LoggingLevel.Debug, '***Executing Trigger Handler -> ' + handler + ' ***');
 
             // keep track of previous trigger fired
-            System.Debug(LoggingLevel.Debug, '***Setting previousHandler...');
+            System.Debug(LoggingLevel.Debug, '***Setting previousHandler to ' + currentHandler);
             TriggerAPI.ITriggerHandler previousHandler = currentHandler;
-            System.Debug(LoggingLevel.Debug, 'previousHandler = ' + previousHandler );
-            System.Debug(LoggingLevel.Debug, 'currentHandler = ' + currentHandler );
 
             // set the static class property of current trigger
-            System.Debug(LoggingLevel.Debug, '***Setting currentHandler...');
+            System.Debug(LoggingLevel.Debug, '***Setting currentHandler to ' + handler);
             currentHandler = handler;
-            System.Debug(LoggingLevel.Debug, 'previousHandler = ' + previousHandler );
-            System.Debug(LoggingLevel.Debug, 'currentHandler = ' + currentHandler );
 
             // execute the current trigger
-            System.Debug(LoggingLevel.Debug,'Invoking ' + handler);
+            System.Debug(LoggingLevel.Debug,'***Invoking Trigger Handler' + handler);
             handler.HandleTrigger(triggerType, newList, newMap, oldList, oldMap);
 
-            System.Debug(LoggingLevel.Debug, '***Setting currentHandler...');
+            System.Debug(LoggingLevel.Debug, '***Setting currentHandler to ' + previousHandler);
             currentHandler = previousHandler;
-            System.Debug(LoggingLevel.Debug, 'previousHandler = ' + previousHandler );
-            System.Debug(LoggingLevel.Debug, 'currentHandler = ' + currentHandler );
 
             System.Debug(LoggingLevel.Debug, '***FINISHED Executing Trigger Handler -> ' + handler + ' ***');
         }

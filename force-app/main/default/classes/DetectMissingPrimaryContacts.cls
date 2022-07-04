@@ -70,4 +70,16 @@ public inherited sharing class DetectMissingPrimaryContacts implements TriggerAP
         if(newTasks.size()>0) insert newTasks;
     }
 
+    public Boolean CaptureInternalDMLTriggers() { return false; }
+
+    public Boolean HandleAllTriggers() { return false; }
+
+    public Boolean IgnoreApplicationTriggers() { return false; }
+
+    public void InternalTrigger(String objectType, TriggerOperation triggerType,
+            List<SObject> newList,
+            Map<Id, SObject> newMap,
+            List<SObject> oldList,
+            Map<Id, SObject> oldMap) {}
+
 }
