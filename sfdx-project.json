@@ -1,8 +1,11 @@
 {
   "packageDirectories": [
     {
-      "path": "force-app",
+      "path": "force-core",
       "default": true
+    },
+    {
+      "path": "force-app"
     }
   ],
   "name": "advanced-apex-programming-fifth",
