@@ -28,6 +28,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 trigger WorkOrderTrigger on WorkOrder (after insert, after update) {
 
-	//QueueableApex.handleTriggerWithQueueable(trigger.new, trigger.newMap, 
-	//	trigger.oldMap, trigger.operationType);
+	QueueableApex.handleTriggerWithQueueable(trigger.new, trigger.newMap, 
+		trigger.oldMap, trigger.operationType);
 }

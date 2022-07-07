@@ -25,15 +25,41 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF 
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-trigger OnAsyncRequestInsert on AsyncRequest__c (after insert) {
+public without sharing class AppCustomSetting {
 	
-    if(Limits.getLimitQueueableJobs() - Limits.getQueueableJobs() > 0)
-		try
+    @testvisible
+    private static AppConfig__c testConfig = null;
+	
+	public static AppConfig__c getAppConfig()
+	{
+		if(Test.isRunningTest() && testConfig!=null) return testConfig;
+		
+		AppConfig__c theobject = AppConfig__c.getInstance('default');
+		if(theObject==null || Test.isRunningTest()) 
 		{
-			QueueableApex.StartQueueable(null);
-		} catch(Exception ex)
-		{
-			// Ignore for now
+			theObject = new AppConfig__c();
+			theObject.name = 'default';
+			theObject.EnableDiagnostics__c = (Test.isRunningTest())? true: false;
+			theObject.AppEnabled__c = true;
+			if(!Test.isRunningTest()) Database.Insert(theobject);
+			else testconfig = theObject;
 		}
+		return theObject;
+	}
 
+	public static Boolean diagnosticsEnabled
+	{ 
+		get
+		{
+			return GetAppConfig().EnableDiagnostics__c;
+		}
+	}
+	
+	public static Boolean appEnabled
+	{
+		get
+		{
+			return GetAppConfig().AppEnabled__c;
+		}
+	}
 }
